@@ -6,6 +6,29 @@
     <description>Recent content on HYP</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>© HYP</copyright><atom:link href="https://hyp-puls.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>© HYP</copyright>
+    <lastBuildDate>Tue, 04 Oct 2022 20:30:41 +0800</lastBuildDate><atom:link href="https://hyp-puls.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MyFirstBlog</title>
+      <link>https://hyp-puls.github.io/posts/myfirstblog/</link>
+      <pubDate>Tue, 04 Oct 2022 20:30:41 +0800</pubDate>
+      
+      <guid>https://hyp-puls.github.io/posts/myfirstblog/</guid>
+      <description>最近读完了 A Primer on Memory Consistency and Cache Coherence这本书，写一篇文章结合我个人了解的其他知识总结一下内存序。
+文章假定读者学习了基本的体系结构。
+概念 Cache Coherence 相信大家对Cache有一个基本的理解。但这里需要引出一个新的概念，共享内存中的Private Cache。
+即使是简单的单核处理器，往往L1 I-Cache与D-Cache也是Private的。因为IFU（取指单元）与LSU（访存单元）通常分布在处理器流水线的不同阶段，它们可能需要同时访问。既然是Private，这个时候如果我们通过访存指令写入了一些指令（通过D-Cache）到某个内存地址，而这个地址已经在I-Cache中，结果就在取指时有可能取到旧值，如何解决这一问题？
+也许L1 I-Cache与D-Cache还可以通过双端口、仲裁器等方式进行共享，并通过一系列Buffer的设计来减少冲突，甚至可以让软件手动添加Cache维护的指令（例如RISC-V的CMO的一系列扩展，MIPS的CACHE指令。甚至使用类似RISC-V上fence.i这样本质是用于刷新流水线的指令，来当做I-D Cache同步指令去写回所有D-Cache并失效所有I-Cache也是一种简单核常用的做法）。但到了多核的场景，每个CPU核心可能距离较远，此时再让所有CPU访问一个共享的Cache，电路上的延迟也不可避免增加，影响效率。
+此外，在我们的计算机上，除了各个处理器核心，可能还有能够访问内存的DMA外设，而DMA写入的数据所对应的地址若在某个Private Cache中有效依然有这样的问题。
+因此，在SMP架构中，我们希望硬件能够实现Cache Coherence，这样能够大大降低编程难度。当然，也存在不保证缓存一致性的硬件架构，例如我们的GPU就采用这样的方式，而这就导致开发者需要更多地去关注程序中每个数据的共享域。这里我们尚不讨论这些情况。
+Cache Coherence需要做的就是让Cache变为透明，将写操作能够eventually传播到其他处理器（也包括一个处理器核中从L1 D-Cache传播到L1 I-Cache）。
+Memory Consistency 细心的读者会发现前文强调了eventually，这与要引入的Memory Consistency有关。不了解有关基础的读者可能会认为一个核心上产生的写操作是跟随程序序传播到其他核心的，这一做法很符合直觉。但别忘了，我们的编译器优化会对访存进行重排，我们的处理器采用乱序多发射的架构一样会对Load/Store进行重排。除了乱序多发射的重排外，处理器还有很多性能优化措施。处理器总线的结构也有各种形式，例如Intel Core的Ringbus，Intel Xeon上的2D Mesh结构。我们如果继续保证写传播到其他核心一定跟随程序序且满足一个全局顺序，那么对于硬件来说会增加很大的开销。而解决硬件这一开销的一种做法就是让Load/Store行为变得“反直觉”，允许硬件对内存操作进行重排序，并添加内存屏障指令（如RISC-V上的fence，ARM上的DMB/DSB/ISB，x86上的lfence/sfence/mfence），在软件要求某些操作不能重排序时，通过内存屏障指令显式告诉硬件。
+因此，Memory Consistency在定义上也叫Memory Consistency Model或Memory Model，它定义的是在共享内存中Load/Store的行为，不涉及缓存与一致性的部分。
+而对于开发者来说，需要熟悉硬件的Consistency模型（通常指令集架构（ISA）就会定义一个最宽松的内存序模型），而使用这个ISA设计/制造的硬件通常又比ISA定义的内存序更严格（更少的reorder情况，更加保序）。因此，软件开发者只需要确保自己的软件能够在ISA定义的这个最弱的Consistency模型上正确工作而不出现Data race，那么在基于这个ISA的硬件上也一定能正确工作。
+内存序 以下讨论基于多个CPU核心共享内存的场景。一个核心观察自身的读写永远是符合程序序的。
+在引出内存序（Memory Ordering）之前，我们先思考下这个代码：
+int x = 0; int y = 0; void t1() { y = 1; int res = x; printf(&amp;#34;x=%d\n&amp;#34;,res); } void t2() { x = 1; int res = y; printf(&amp;#34;y=%d\n&amp;#34;,res); }COPY 提问，如果编译器不进行任何优化，静态区内存分配将x和y的地址相距很远（不抬杠它是否在同一个Cache Line的问题），如果t1与t2运行在不同的CPU核心上，有可能出现x=0&amp;amp;&amp;amp;y=0吗？</description>
+    </item>
+    
   </channel>
 </rss>
