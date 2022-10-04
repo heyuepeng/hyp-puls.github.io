@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>© HYP</copyright>
-    <lastBuildDate>Tue, 04 Oct 2022 20:30:41 +0800</lastBuildDate><atom:link href="https://hyp-puls.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 04 Oct 2022 20:55:43 +0800</lastBuildDate><atom:link href="https://hyp-puls.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Test</title>
+      <link>https://hyp-puls.github.io/posts/test/</link>
+      <pubDate>Tue, 04 Oct 2022 20:55:43 +0800</pubDate>
+      
+      <guid>https://hyp-puls.github.io/posts/test/</guid>
+      <description>11111111111111111111111111111</description>
+    </item>
+    
     <item>
       <title>MyFirstBlog</title>
       <link>https://hyp-puls.github.io/posts/myfirstblog/</link>
